@@ -1,16 +1,16 @@
 ===== 
 Proper: Small CMS for BIZ
 ===== 
-subtitle
+simple service
 -------- 
 
-body
+<please add description :)>
 
 
 
 
 :Authors: 
-    Joho Lee, 
+    Jiho Lee, 
     Haibane
 
 :Version: 1.0 of 2013/12/24 
