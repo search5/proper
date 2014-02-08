@@ -12,5 +12,6 @@ simple service
 :Authors: 
     Jiho Lee, 
     Haibane
+    This is Test Version
 
 :Version: 1.0 of 2013/12/24 
