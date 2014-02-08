@@ -5,16 +5,21 @@ import os
 #reload(sys)
 #sys.setdefaultencoding('utf-8')
 import util
+import json
+import re
 
 from flask import Flask, abort, g, render_template, request, redirect, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename
+from webhelpers import paginate
+from dateutil.parser import parse
+#from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['UPLOAD_DIR'] = os.path.join(os.path.dirname(__file__), "uploads")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://jiho:dmsthfl@localhost/proper'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proper:1234@localhost/proper'
 db = SQLAlchemy(app)
 
+from proper.models import User, Dept, ServiceRequest, Asset, AssetHistory
 
 def connect_db():
     pass
@@ -46,114 +51,518 @@ def page_not_allow(e):
 
 @app.route("/asset")
 def asset_list():
+    print type(request.stream)
     return render_template("asset/list.html")
 
 
 @app.route("/pc", endpoint='pc')
 def pc_list():
+    page = int(request.args.get('page', 1))
+    items_per_page = 100
 
-    # PC 목록 수 가져오기
-    cursor = g.db.cursor()
-    cursor.execute("select count(no) from pc_asset")
-    total_cnt = cursor.fetchone()[0]
+    q = db.session.query(Asset).filter(Asset.asset_type == 'desktop').order_by(db.desc(Asset.seq))
+    page_url = paginate.PageURL("/pc", {"page": page})
+    records = paginate.Page(q, page, url=page_url, items_per_page=items_per_page)
 
-    ########### 페이징 정보 계산하기
-	
-	# 페이지 당 보여줄 목록 개수
-    perPage = 12
-	
-	# 현재 페이지 수
-    currPage = int(request.args.get('page', 1))
-	
-    paging_env = util.paging_env_calc(perPage, currPage, total_cnt)
-    
-    total_page = paging_env['totalPage']
-    limitStart = paging_env['limitStart']
-    prev_page_number = paging_env['prevPageNum']
-    next_page_number = paging_env['nextPageNum']
-
-    # 단, 현재 페이지 수(요청받은 페이지 번호)가 전체 페이지 수보다 큰 경우
-    # 전체 페이지 수를 현재 페이지 수에 설정한다.
-    if currPage > total_page:
-        currPage = total_page
-
-    ########### // 페이징 정보 계산하기
-
-    cursor.execute("select no, code, model_nm, make_date, acquire_date, processor, memory, note from pc_asset order by no desc limit %(limitStart)d, %(perPage)d" % dict(limitStart=limitStart, perPage=perPage))
-    lstPc = [dict(no=row[0], code=row[1], model_nm=row[2], make_date=row[3], acquire_date=row[4], processor=row[5], memory=row[6], note=row[7]) for row in cursor.fetchall()]
-
-    # 커서 삭제
-    del cursor
-
-    # view에 넘길 데이터 지정
     view_data = {
-        "lst_pc": lstPc,
-        "total_page": int(total_page),
-        "currPage": currPage,
-        "prev_page_number": prev_page_number,
-        "next_page_number": next_page_number
+        "total": q.count(),
+        "records": records
     }
+
+    db.session.commit()
 
     return render_template("asset/pc_list.html", **view_data)
 
-@app.route("/pc/add/form", methods=("GET",))
-def pc_asset_add_form():
-    return render_template("asset/pc_add.html")
+@app.route("/pc/create", methods=("POST",))
+def pc_asset_create():
+    pc_info = {}
 
-@app.route("/pc/add", methods=("POST",))
-def pc_asset_add():
-
-    ins_values = {
-        "code": request.form.get("code", ""),
-        "model_nm": request.form.get("model_nm", ""),
-        "make_date": request.form.get("make_date", ""),
-        "acquire_date": request.form.get("acquire_date", ""),
-        "processor": request.form.get("processor", ""),
-        "memory": request.form.get("memory", ""),
-        "note": request.form.get("note", "")
-    }
-
-    ins_sql = unicode("insert into pc_asset (code, model_nm, make_date, acquire_date, processor, memory, note) values ('%(code)s', '%(model_nm)s', '%(make_date)s', '%(acquire_date)s', '%(processor)s', '%(memory)s', '%(note)s')" % ins_values)
-
-    cursor = g.db.cursor()
-    cursor.execute(ins_sql)
-
-    del cursor
-
-    if request.files['xml']:
-        request.files['xml'].save(os.path.join(app.config['UPLOAD_DIR'], util.generateTimeBaseFileName(request.files['xml'].filename)))
+    if request.files['file_xml']:
+        new_xml_filename = os.path.join(app.config['UPLOAD_DIR'], util.generateTimeBaseFileName(request.files['file_xml'].filename))
+        request.files['file_xml'].save(new_xml_filename)
     
-    # XML 파일을 분석해서 정보 채워넣기
+        # XML 파일을 분석해서 정보 채워넣기
+        pc_info = util.parsePCInfoXML(new_xml_filename)
+
+    asset = Asset()
+    asset.manufacture = pc_info['manufacture']
+    asset.video_chip = pc_info['video_chip']
+    asset.scan_time = parse(pc_info['scan_time'])
+    asset.service_pack = pc_info['service_pack']
+    asset.processor_version = pc_info['cpu_name']
+    asset.hdd_name = pc_info['hdd_name']
+    asset.memory_size = pc_info['memory_size']
+    asset.hdd_capacity = pc_info['hdd_capacity']
+    asset.hdd_serial = pc_info['hdd_serial']
+    asset.product_serial = pc_info['product_serial']
+    asset.mac_address = pc_info['mac_addr']
+    asset.os = pc_info['os']
+    asset.product_name = pc_info['product_name']
+    asset.usb_support_type = pc_info['usb_support_ver']
+    asset.asset_type = 'desktop'
+    asset.xml_file_name = request.files['file_xml'].filename
+    asset.xml_file_content = new_xml_filename
+
+    db.session.add(asset)
+    db.session.commit()
+
+    asset.asset_code = util.makeAssetCode(asset.seq)
+    db.session.commit()
 
     return redirect(url_for('pc'))
 
-@app.route("/pc/<asset_code>")
+@app.route("/pc/<asset_code>", endpoint="pc_view")
 def pc_asset_view(asset_code):
-    # PC 데이터 가져오기
-    cursor = g.db.cursor()
-    cursor.execute("select no, code, model_nm, make_date, acquire_date, processor, memory, note, addtion, windows_version, windows_key from pc_asset where code='%s'" % asset_code)
-    record = cursor.fetchone()
 
-    view_data = {
-        "no": record[0],
-        "code": record[1],
-        "model_nm": record[2],
-        "make_date": record[3],
-        "acquire_date": record[4],
-        "processor": record[5],
-        "memory": record[6],
-        "note": record[7],
-        "addtion": record[8],
-        "win_ver": record[9],
-        "win_key": record[10]
+    asset = db.session.query(Asset).filter(Asset.asset_code == asset_code).first()
+    asset_dict = asset.__dict__
+    asset_dict['user'] = asset.user # Asset 레코드를 __dict__를 사용해 변환하는 경우 relationship은 상속받지 못한다.
+
+    # 항목 변경내역 가져오기
+    asset_history = db.session.query(AssetHistory).filter(AssetHistory.asset_code == asset_code)
+    asset_dict['asset_history'] = asset_history
+
+    print dir(asset)
+
+    return render_template("asset/pc_view.html", **asset_dict)
+
+# 정보 업데이트
+@app.route("/pc/<asset_code>/update", methods=("POST",))
+def pc_asset_update(asset_code):
+    user_input_dict = {
+        'video_chip': request.values.get('video_chip', ''),
+        'manufacture': request.values.get('manufacture', ''),
+        'netbios_name': request.values.get('netbios_name', ''),
+        'hdd_name': request.values.get('hdd_name', ''),
+        'memory_size': request.values.get('memory_size', ''),
+        'disuse_date': request.values.get('disuse_date', ''),
+        'acquire_money': request.values.get('acquire_money', ''),
+        'windows_serial': request.values.get('windows_serial', ''),
+        'asset_code': request.values.get('asset_code', ''),
+        'note': request.values.get('note', ''),
+        'mac_address': request.values.get('mac_address', ''),
+        'product_name': request.values.get('product_name', ''),
+        'make_date': request.values.get('make_date', ''),
+        'windows_version': request.values.get('windows_version', ''),
+        'service_pack': request.values.get('service_pack', ''),
+        'config_no': request.values.get('config_no', ''),
+        'hdd_capacity': request.values.get('hdd_capacity', ''),
+        'processor_version': request.values.get('processor_version', ''),
+        'hdd_serial': request.values.get('hdd_serial', ''),
+        'product_serial': request.values.get('product_serial', ''),
+        'acquire_date': request.values.get('acquire_date', ''),
+        'usb_support_type': request.values.get('usb_support_type', ''),
+        'os': request.values.get('os', ''),
+        'disuse_note': request.values.get('disuse_note', ''),
+        'send_date': request.values.get('send_date', ''),
+        'collect_date': request.values.get('collect_date', ''),
+        'user_seq': request.values.get('user_seq', 0)
     }
 
-    del cursor
+    # 사용자가 입력한 것과 데이터베이스에 저장되어 있는 값을 마이너스 연산해서 어떤 값을 변경했는지 기록을 님기게 한다.
 
-    return render_template("asset/pc_view.html", **view_data)
+    # Database Record
+    record = db.session.query(Asset).filter(Asset.asset_code == asset_code).first()
+    changed_data = record - user_input_dict
+
+    # 변경내역이 None이 아니고 하나 이상일 경우 수행하게 한다.
+    if (changed_data != None) and (len(changed_data) > 0):
+        for item in changed_data:
+            # 히스토리 레코드 생성
+            asset_history = AssetHistory(asset_code, **item)
+            db.session.add(asset_history)
+
+    # 할당 정보 입력을 위해 행동을 취한다.
+    user_seq = request.values.get('user_seq', 0)
+    user_name = request.values.get('user_name', '')
+
+    # 사용자 정보 할당
+    user = db.session.query(User).filter(User.seq == user_seq).first()
+    record.user = user
+
+    db.session.commit()
+
+    return redirect(url_for("pc_view", asset_code=asset_code))
+
+@app.route("/notebook", endpoint='notebook')
+def notebook_list():
+    page = int(request.args.get('page', 1))
+    items_per_page = 100
+
+    q = db.session.query(Asset).filter(Asset.asset_type == 'notebook').order_by(db.desc(Asset.seq))
+    page_url = paginate.PageURL("/notebook", {"page": page})
+    records = paginate.Page(q, page, url=page_url, items_per_page=items_per_page)
+
+    view_data = {
+        "total": q.count(),
+        "records": records
+    }
+
+    db.session.commit()
+
+    return render_template("asset/notebook_list.html", **view_data)
+
+@app.route("/notebook/create", methods=("POST",))
+def notebook_asset_create():
+    pc_info = {}
+
+    if request.files['file_xml']:
+        new_xml_filename = os.path.join(app.config['UPLOAD_DIR'], util.generateTimeBaseFileName(request.files['file_xml'].filename))
+        request.files['file_xml'].save(new_xml_filename)
+
+        # XML 파일을 분석해서 정보 채워넣기
+        pc_info = util.parsePCInfoXML(new_xml_filename)
+
+    asset = Asset()
+    asset.manufacture = pc_info['manufacture']
+    asset.video_chip = pc_info['video_chip']
+    asset.scan_time = parse(pc_info['scan_time'])
+    asset.service_pack = pc_info['service_pack']
+    asset.processor_version = pc_info['cpu_name']
+    asset.hdd_name = pc_info['hdd_name']
+    asset.memory_size = pc_info['memory_size']
+    asset.hdd_capacity = pc_info['hdd_capacity']
+    asset.hdd_serial = pc_info['hdd_serial']
+    asset.product_serial = pc_info['product_serial']
+    asset.mac_address = pc_info['mac_addr']
+    asset.os = pc_info['os']
+    asset.product_name = pc_info['product_name']
+    asset.usb_support_type = pc_info['usb_support_ver']
+    asset.asset_type = 'notebook'
+    asset.xml_file_name = request.files['file_xml'].filename
+    asset.xml_file_content = new_xml_filename
+
+    db.session.add(asset)
+    db.session.commit()
+
+    asset.asset_code = util.makeAssetCode(asset.seq)
+    db.session.commit()
+
+    return redirect(url_for('notebook'))
+
+@app.route("/notebook/<asset_code>", endpoint="notebook_view")
+def notebook_asset_view(asset_code):
+
+    asset = db.session.query(Asset).filter(Asset.asset_code == asset_code).first()
+    asset_dict = asset.__dict__
+    asset_dict['user'] = asset.user # Asset 레코드를 __dict__를 사용해 변환하는 경우 relationship은 상속받지 못한다.
+
+    # 항목 변경내역 가져오기
+    asset_history = db.session.query(AssetHistory).filter(AssetHistory.asset_code == asset_code)
+    asset_dict['asset_history'] = asset_history
+
+    return render_template("asset/notebook_view.html", **asset_dict)
+
+# 정보 업데이트
+@app.route("/notebook/<asset_code>/update", methods=("POST",))
+def notebook_asset_update(asset_code):
+    user_input_dict = {
+        'video_chip': request.values.get('video_chip', ''),
+        'manufacture': request.values.get('manufacture', ''),
+        'netbios_name': request.values.get('netbios_name', ''),
+        'hdd_name': request.values.get('hdd_name', ''),
+        'memory_size': request.values.get('memory_size', ''),
+        'disuse_date': request.values.get('disuse_date', ''),
+        'acquire_money': request.values.get('acquire_money', ''),
+        'windows_serial': request.values.get('windows_serial', ''),
+        'asset_code': request.values.get('asset_code', ''),
+        'note': request.values.get('note', ''),
+        'mac_address': request.values.get('mac_address', ''),
+        'product_name': request.values.get('product_name', ''),
+        'make_date': request.values.get('make_date', ''),
+        'windows_version': request.values.get('windows_version', ''),
+        'service_pack': request.values.get('service_pack', ''),
+        'config_no': request.values.get('config_no', ''),
+        'hdd_capacity': request.values.get('hdd_capacity', ''),
+        'processor_version': request.values.get('processor_version', ''),
+        'hdd_serial': request.values.get('hdd_serial', ''),
+        'product_serial': request.values.get('product_serial', ''),
+        'acquire_date': request.values.get('acquire_date', ''),
+        'usb_support_type': request.values.get('usb_support_type', ''),
+        'os': request.values.get('os', ''),
+        'disuse_note': request.values.get('disuse_note', ''),
+        'send_date': request.values.get('send_date', ''),
+        'collect_date': request.values.get('collect_date', ''),
+        'user_seq': request.values.get('user_seq', 0)
+    }
+
+    # 사용자가 입력한 것과 데이터베이스에 저장되어 있는 값을 마이너스 연산해서 어떤 값을 변경했는지 기록을 님기게 한다.
+
+    # Database Record
+    record = db.session.query(Asset).filter(Asset.asset_code == asset_code).first()
+    changed_data = record - user_input_dict
+
+    # 변경내역이 None이 아니고 하나 이상일 경우 수행하게 한다.
+    if (changed_data != None) and (len(changed_data) > 0):
+        for item in changed_data:
+            # 히스토리 레코드 생성
+            asset_history = AssetHistory(asset_code, **item)
+            db.session.add(asset_history)
+
+    # 할당 정보 입력을 위해 행동을 취한다.
+    user_seq = request.values.get('user_seq', 0)
+    user_name = request.values.get('user_name', '')
+
+    # 사용자 정보 할당
+    user = db.session.query(User).filter(User.seq == user_seq).first()
+    record.user = user
+
+    db.session.commit()
+
+    return redirect(url_for("notebook_view", asset_code=asset_code))
+
+@app.route("/monitor", endpoint='monitor')
+def monitor_list():
+    page = int(request.args.get('page', 1))
+    items_per_page = 100
+
+    q = db.session.query(Asset).filter(Asset.asset_type == 'monitor').order_by(db.desc(Asset.seq))
+    page_url = paginate.PageURL("/monitor", {"page": page})
+    records = paginate.Page(q, page, url=page_url, items_per_page=items_per_page)
+
+    view_data = {
+        "total": q.count(),
+        "records": records
+    }
+
+    db.session.commit()
+
+    return render_template("asset/monitor_list.html", **view_data)
+
+@app.route("/monitor/create", methods=("POST",))
+def monitor_asset_create():
+    monitors_info = {}
+
+    if request.files['file_xml']:
+        new_xml_filename = os.path.join(app.config['UPLOAD_DIR'], util.generateTimeBaseFileName(request.files['file_xml'].filename))
+        request.files['file_xml'].save(new_xml_filename)
+
+        # XML 파일을 분석해서 정보 채워넣기
+        monitors_info = util.parseMonitorInfoXML(new_xml_filename)
+
+    for monitor in monitors_info:
+        date_parse = re.search('Week: ([0-9]{,2}), Year: ([0-9]{,4})', monitor['make_date'])
+        asset = Asset()
+        asset.product_serial = monitor['product_serial']
+        asset.product_name = monitor['product_name']
+        asset.asset_type = 'monitor'
+        asset.make_date ="{1}-{0}".format(date_parse.group(1), date_parse.group(2))
+        asset.xml_file_name = request.files['file_xml'].filename
+        asset.xml_file_content = new_xml_filename
+
+        db.session.add(asset)
+        db.session.commit()
+
+        asset.asset_code = util.makeAssetCode(asset.seq)
+        db.session.commit()
+
+    return redirect(url_for('monitor'))
+
+@app.route("/monitor/<asset_code>", endpoint="monitor_view")
+def monitor_asset_view(asset_code):
+
+    asset = db.session.query(Asset).filter(Asset.asset_code == asset_code).first()
+    asset_dict = asset.__dict__
+    asset_dict['user'] = asset.user # Asset 레코드를 __dict__를 사용해 변환하는 경우 relationship은 상속받지 못한다.
+
+    # 항목 변경내역 가져오기
+    asset_history = db.session.query(AssetHistory).filter(AssetHistory.asset_code == asset_code)
+    asset_dict['asset_history'] = asset_history
+
+    return render_template("asset/monitor_view.html", **asset_dict)
+
+# 정보 업데이트
+@app.route("/monitor/<asset_code>/update", methods=("POST",))
+def monitor_asset_update(asset_code):
+    user_input_dict = {
+        'manufacture': request.values.get('manufacture', ''),
+        'asset_code': request.values.get('asset_code', ''),
+        'make_date': request.values.get('make_date', ''),
+        'product_name': request.values.get('product_name', ''),
+        'product_serial': request.values.get('product_serial', ''),
+        'acquire_date': request.values.get('acquire_date', ''),
+        'disuse_date': request.values.get('disuse_date', ''),
+        'disuse_note': request.values.get('disuse_note', ''),
+        'send_date': request.values.get('send_date', ''),
+        'collect_date': request.values.get('collect_date', ''),
+        'user_seq': request.values.get('user_seq', 0)
+    }
+
+    # 사용자가 입력한 것과 데이터베이스에 저장되어 있는 값을 마이너스 연산해서 어떤 값을 변경했는지 기록을 님기게 한다.
+
+    # Database Record
+    record = db.session.query(Asset).filter(Asset.asset_code == asset_code).first()
+    changed_data = record - user_input_dict
+
+    # 변경내역이 None이 아니고 하나 이상일 경우 수행하게 한다.
+    if (changed_data != None) and (len(changed_data) > 0):
+        for item in changed_data:
+            # 히스토리 레코드 생성
+            asset_history = AssetHistory(asset_code, **item)
+            db.session.add(asset_history)
+
+    # 할당 정보 입력을 위해 행동을 취한다.
+    user_seq = request.values.get('user_seq', 0)
+
+    # 사용자 정보 할당
+    user = db.session.query(User).filter(User.seq == user_seq).first()
+    record.user = user
+
+    db.session.commit()
+
+    return redirect(url_for("monitor_view", asset_code=asset_code))
+
+@app.route("/user", endpoint="user")
+def user_list():
+    page = int(request.args.get('page', 1))
+    items_per_page = 100
+
+    q = db.session.query(User)
+    total_cnt = q.count()
+    q = q.order_by(db.desc(User.seq))
+    page_url = paginate.PageURL("/user", {"page": page})
+    records = paginate.Page(q, page, url=page_url, items_per_page=items_per_page)
+
+    # 팀 목록 제공하기
+    team_list = db.session.query(Dept)
+
+    view_data = {
+        "total": total_cnt,
+        "records": records,
+        "team_list": team_list
+    }
+
+    db.session.commit()
+
+    return render_template("mngt/user.html", **view_data)
+
+@app.route("/user/<user_seq>", endpoint="user_view")
+def user_view(user_seq):
+    q = db.session.query(User).filter(User.seq == user_seq).first()
+
+    # 팀 목록 제공하기
+    team_list = db.session.query(Dept)
+
+    # 사용했던 자산목록 가져오기
+    assets_history = db.session.query(AssetHistory.asset_code).filter(AssetHistory.field_name == 'user_seq')
+    assets_history = assets_history.filter(AssetHistory.old_value == user_seq)
+
+    assets_history = db.session.query(Asset).filter(Asset.asset_code.in_(assets_history))
+    print assets_history.all()
+
+    view_data = q.__dict__
+    view_data['assets'] = q.assets
+    view_data['dept'] = q.dept
+    view_data['team_list'] = team_list
+    view_data['assets_history'] = assets_history
+
+    return render_template("mngt/user_view.html", **view_data)
+
+@app.route("/user/<user_seq>/update", methods=['POST'])
+def user_update(user_seq):
+    # dept, user_name, user_position이 넘어온다.
+    dept = request.values.get('dept', 0)
+    user_name = request.values.get('user_name', '')
+    user_position = request.values.get('user_position', '')
+    user_ip = request.values.get('user_ip', '')
+    user_seq = request.values.get('user_seq', 0)
+
+    dept_record = db.session.query(Dept).filter(Dept.seq == dept).first()
+
+    update_user = db.session.query(User).filter(User.seq == user_seq).first()
+    update_user.dept = dept_record
+    update_user.user_name = user_name
+    update_user.user_position = user_position
+    update_user.user_ip = user_ip
+
+    db.session.commit()
+
+    return redirect(url_for("user", user_seq=user_seq))
+
+@app.route("/user/create", methods=("POST",))
+def user_create():
+    # dept, user_name, user_position이 넘어온다.
+    dept = request.values.get('dept', 0)
+    user_name = request.values.get('user_name', '')
+    user_position = request.values.get('user_position', '')
+    user_ip = request.values.get('user_ip', '')
+
+    dept_record = db.session.query(Dept).filter(Dept.seq == dept).first()
+
+    new_user = User(dept_record, user_name, user_position, user_ip)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return redirect(url_for("user"))
+
+@app.route("/user/all")
+def user_all():
+    # 사용자 목록을 모두 리스트로 만들어 사용자에게 보낸다.
+    q = db.session.query(User)
+
+    user_list = []
+    for user in q:
+        user_detail = {
+            'user_seq': user.seq,
+            'user_name': '%s %s' % (user.dept.dept_team_nm, user.user_name)
+        }
+        user_list.append(user_detail)
+
+    return json.dumps(user_list)
+
+
+@app.route("/team", endpoint="team")
+def team_list():
+    records = db.session.query(Dept)
+
+    view_data = {
+        "total": records.count(),
+        "records": records
+    }
+
+    db.session.commit()
+
+    return render_template("mngt/team.html", **view_data)
+
+@app.route("/team/create", methods=("POST",))
+def team_create():
+    team_name = request.values.get('team_name', '')
+    if team_name != "":
+        # 팀 이름이 들어왔을때만 팀을 생성하게 한다.
+        team = Dept(team_name)
+
+        db.session.add(team)
+        db.session.commit()
+
+    return redirect(url_for("team"))
+
+@app.route("/team/<seq>/update", methods=("POST",))
+def team_update(seq):
+    team_seq = request.values.get('pk', 0)
+    team_name = request.values.get('value', '')
+
+    if team_name != "":
+        # 팀 이름이 들어왔을때만 팀을 업데이트하게 한다.
+        team = db.session.query(Dept).filter(Dept.seq == team_seq).first()
+        team.dept_team_nm = team_name
+
+        db.session.commit()
+
+    return redirect(url_for("team"))
 
 @app.teardown_request
 def teardown_request(exception):
-    #g.db.commit()
-    #g.db.close()
     pass
+
+@app.route("/sr")
+def sr():
+    # 접속된 IP를 확인하여 사용자 이름 및 현재 사용중인 어셋 정보 등을 채워준다.
+    connect_user_ip = request.remote_addr
+    connect_user = db.session.query(User).filter(User.user_ip == connect_user_ip).first()
+
+    view_data = {
+        'user_info': connect_user
+    }
+
+    return render_template("sr/list.html", **view_data)

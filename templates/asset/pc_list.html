@@ -3,8 +3,19 @@
 {% block content%}
 <div class="row">
     <div class="row">
-        <div class="span2">
-            <a href="/pc/add/form" role="button" class="btn">PC 추가</a>
+        <div class="span10">
+            <ul id="listTab" class="nav nav-tabs">
+                <li><a href="#search" data-toggle="tab">검색</a></li>
+                <li><a href="#add" data-toggle="tab">추가</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="search">...</div>
+                <div class="tab-pane" id="add">
+                    <form method="post" action="/pc/create" enctype="multipart/form-data">
+                        XML 선택 : <input type="file" name="file_xml" size="40"/> <input class="btn" type="submit" value="정보 등록"/>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">&nbsp;</div>
@@ -13,44 +24,28 @@
             <tr>
                 <th>번호</th>
                 <th>자산코드</th>
-                <th>모델명</th>
+                <!--<th>모델명</th>-->
                 <th>제조년월</th>
                 <th>취득년월</th>
-                <th>프로세서</th>
-                <th>메모리</th>
-                <th>비고</th>
+                <th>사용자</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <td colspan="8"">
-                {% if total_page == 1 %}
-                <select style="width: 100px;">
-                    <option>{{total_page}}</option>
-                </select>
-                {% elif total_page > 1 %}
-                <a href="/pc?page={{prev_page_number}}" class="btn btn-small"><i class="icon-chevron-left"></i></a>
-                <select style="width: 100px;" class="form-control paging">
-                    {% for page_num in range(1, total_page + 1) %}
-                        <option {% if page_num == currPage %}selected{% endif %}>{{page_num}}</option>
-                    {% endfor %}
-                </select>
-                <a href="/pc?page={{next_page_number}}" class="btn btn-small"><i class="icon-chevron-right"></i></a>
-                {% endif %}
+                <td colspan="6">
+                    {{ records.pager('$link_previous ~3~ $link_next (Page $page of $page_count)') }}
                 </td>
             </tr>
         </tfoot>
         <tbody>
-            {% for row in lst_pc %}
+            {% for row in records %}
             <tr>
-                <td>{{row.no}}</td>
-                <td><a href="/pc/{{row.code}}">{{row.code}}</a></td>
-                <td>{{row.model_nm or ''}}</td>
+                <td>{{row.seq}}</td>
+                <td><a href="/pc/{{row.asset_code}}">{{row.asset_code}}</a></td>
+                <!--<td>{{row.product_name or ''}}</td>-->
                 <td>{{row.make_date or ''}}</td>
                 <td>{{row.acquire_date or ''}}</td>
-                <td>{{row.processor or ''}}</td>
-                <td>{{row.memory or ''}}</td>
-                <td>{{row.note or ''}}</td>
+                <td>{% if row.user %}{{row.user.dept.dept_team_nm}} {{row.user.user_name}}{% endif %}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -62,10 +57,7 @@
 {% block script %}
 <script type="text/javascript">
 $(function() {
-    $("select.paging").change(function(e) {
-        var selPage = $(this).val();
-        document.location = "/pc?page=" + selPage;
-    });
+    $('#listTab a:first').tab('show');
 });
 </script>
 {% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!--
+    receipt_note = db.Column(db.Text) # 접수내역
+    closed_note = db.Column(db.Text) # 처리내역
+    user_seq = db.Column(db.Integer) # 접수 신청자 코드
+    -->
+    <h3>{{ user_info.user_name }}님 어서오세요.</h3>
+    <div class="row">
+        <div class="span4">
+            <form method="post" action="/sr/create">
+                <fieldset>
+                    <legend>서비스 신청 접수</legend>
+                    <label>사용자명</label>
+                    <input type="text" class="form-control" name="user_name" value="{{ user_info.user_name }}"/>
+                    {% if user_info.assets %}
+                    <label>자산 선택</label>
+                    <select class="form-control" name="asset">
+
+                            {% for asset in user_info.assets %}
+                                <option value="{{ asset.asset_code }}">{{ asset.product_name }} - {{ asset.asset_type }}</option>
+                            {% endfor %}
+                    </select>
+                    {% endif %}
+                    <label>처리시작시간</label>
+                    <div class="input-append datetime">
+                        <input name="start_work_time" data-format="yyyy/dd/MM hh:mm:ss" type="text"/>
+                        <span class="add-on">
+                            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        </span>
+                    </div>
+                    <label>처리종료시간</label>
+                    <div class="input-append datetime">
+                        <input name="end_work_time" data-format="yyyy/dd/MM hh:mm:ss" type="text"/>
+                        <span class="add-on">
+                            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        </span>
+                    </div>
+                    <label>접수분야</label>
+                    <div>
+                        <label class="radio">
+                          <input type="radio" name="sr_type" value="Hardware" checked>
+                          하드웨어
+                        </label>
+                        <label class="radio">
+                          <input type="radio" name="sr_type" value="Software">
+                          소프트웨어
+                        </label>
+                    </div>
+                    <label>증상</label>
+                    <textarea name="receipt_note" class="form-control span4"></textarea>
+                    <label>처리내역</label>
+                    <textarea name="closed_note" class="form-control span4"></textarea>
+                    <label>처리상태</label>
+                    <div>
+                        <label class="radio">
+                            <input type="radio" name="status" value="R" checked>
+                            접수
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="status" value="P">
+                            진행중
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="status" value="E">
+                            종료
+                        </label>
+                    </div>
+                    <span class="help-block">서비스 접수에 어려움을 겪는 경우 IT팀 이지호(453)에 문의 바랍니다.</span>
+                    <button type="submit" class="btn btn-primary">접수 요청 및 수정</button>
+                </fieldset>
+            </form>
+        </div>
+        <div class="span8">
+            <table class="table table-bordered">
+                <tr>
+                    <th>번호</th>
+                    <th>접수요청자</th>
+                    <th>처리시작시간</th>
+                    <th>처리종료시간</th>
+                    <th>처리상태</th>
+                </tr>
+                {% for item in sr_list %}
+                <tr>
+                    <td>{{ item.seq }}</td>
+                    <td>{{ item.user_name }}</td>
+                    <td>{{ item.start_work_time }}</td>
+                    <td>{{ item.end_work_time }}</td>
+                    <td>{{ item.status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+    $(function() {
+        $('div.datetime').datetimepicker({
+            format: 'yyyy/dd/MM hh:mm:ss'
+        });
+    });
+    </script>
+{% endblock %}
