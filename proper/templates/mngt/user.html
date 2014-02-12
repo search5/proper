@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content%}
+    <table class="table">
+        <thead>
+            <tr>
+                <td colspan="5">
+                    <ul id="listTab" class="nav nav-tabs">
+                        <li><a href="#search" data-toggle="tab">검색</a></li>
+                        <li><a href="#add" data-toggle="tab">추가</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="search">...</div>
+                        <div class="tab-pane" id="add">
+                            <form method="post" action="/user/create">
+                                부서/팀 : <select name="dept">
+                                    {% for team in team_list %}
+                                        <option value="{{ team.seq }}">{{ team.dept_team_nm }}</option>
+                                    {% endfor %}
+                                </select>
+                                사용자: <input type="text" name="user_name" class="text" autofocus="true"/>
+                                직급 : <input type="text" name="user_position" class="text"/>
+                                IP : <input type="text" name="user_ip" class="text"/>
+                                <button type="submit" class="btn">생성</button>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th class="span1">번호</th>
+                <th class="span5">부서/팀</th>
+                <th class="span3">사용자명</th>
+                <th class="span2">직급</th>
+                <th>IP</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td colspan="5">
+                    {{ records.pager('$link_previous ~3~ $link_next (Page $page of $page_count)') }}
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.seq }}</td>
+                <td>{{ record.dept.dept_team_nm }}</td>
+                <td><a href="/user/{{ record.seq }}">{{ record.user_name }}</a></td>
+                <td>{{ record.user_position }}</td>
+                <td>{{ record.user_ip }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+
+{% block script %}
+    <script type="text/javascript">
+    $(function() {
+        $('#listTab a:first').tab('show');
+    });
+    </script>
+{% endblock %}

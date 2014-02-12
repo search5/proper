@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div class="row">
+    <div class="row">
+        <div class="span10">
+            <ul id="listTab" class="nav nav-tabs">
+                <li><a href="#search" data-toggle="tab">검색</a></li>
+                <li><a href="#add" data-toggle="tab">추가</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="search">...</div>
+                <div class="tab-pane" id="add">
+                    <form method="post" action="/notebook/create" enctype="multipart/form-data">
+                        XML 선택 : <input type="file" name="file_xml" size="40"/> <input class="btn" type="submit" value="정보 등록"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <table class="table table-bordered table-striped data-list">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>자산코드</th>
+                <!--<th>모델명</th>-->
+                <th>제조년월</th>
+                <th>취득년월</th>
+                <th>사용자</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td colspan="5">
+                    {{ records.pager('$link_previous ~3~ $link_next (Page $page of $page_count)') }}
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for row in records %}
+            <tr>
+                <td>{{row.seq}}</td>
+                <td><a href="/notebook/{{row.asset_code}}">{{row.asset_code}}</a></td>
+                <!--<td>{{row.product_name or ''}}</td>-->
+                <td>{{row.make_date or ''}}</td>
+                <td>{{row.acquire_date or ''}}</td>
+                <td>{% if row.user %}{{row.user.dept.dept_team_nm}} {{row.user.user_name}}{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script type="text/javascript">
+$(function() {
+    $('#listTab a:first').tab('show');
+});
+</script>
+{% endblock %}
