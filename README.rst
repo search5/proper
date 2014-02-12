@@ -11,11 +11,19 @@ simple service
 
 1. VirtualEnv 환경구성
 
+<<<<<<< HEAD
+=======
+.. code-block:: bash
+>>>>>>> 58078ecac62dcd1286a41c355989acd6f658fbca
     $ easy_install virtualenv
     $ virtualenv venv
 
 2. 라이브러리 설치
 
+<<<<<<< HEAD
+=======
+.. code-block:: bash
+>>>>>>> 58078ecac62dcd1286a41c355989acd6f658fbca
     $ source venv/bin/activate
     (venv)$ easy_install flask==0.10.1 jinja2==2.7.1 markupsafe==0.18 sqlalchemy==0.9.1 webhelpers==1.3 tornado==3.2 flask-sqlalchemy==1.0 python-dateutil psycopg2
 
