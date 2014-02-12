@@ -34,6 +34,12 @@ $ source venv/bin/activate
   
   - 비밀번호 : 1234
 
+(venv)$ python
+
+>>> from yourapplication import db
+
+>>> db.create_all()
+
 4. 프로그램 실행
 
 $ python serv_start.py
