@@ -29,7 +29,9 @@
 {% endblock %}
 
 {% block content %}
-
+<form method="post" action="/pc/{{asset_code}}/updateXml" enctype="multipart/form-data">
+    XML 선택 : <input type="file" name="file_xml" size="40"/> <input class="btn" type="submit" value="정보 업데이트"/>
+</form>
 <form role="form" method="post" action="/pc/{{ asset_code }}/update" id="accordion">
     <input type="hidden" name="user_seq" value="{{ user.seq or 0 }}"/> <!-- 초기엔 어떤 사용자도 없다. 어떤 사용자도 가리키지 않은 값은 0이다 -->
     <div class="panel panel-default">
@@ -240,6 +242,7 @@
         <div class="panel-body panel-collapse collapse" id="history">
             <table class="table">
                 <thead>
+
                     <tr>
                         <th>변경항목</th>
                         <th>이전 값</th>
