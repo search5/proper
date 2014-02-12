@@ -36,7 +36,7 @@ $ source venv/bin/activate
 
 (venv)$ python
 
->>> from yourapplication import db
+>>> from proper import db
 
 >>> db.create_all()
 
