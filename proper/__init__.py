@@ -30,8 +30,7 @@ def connect_db():
 def before_request():
     g.db = connect_db()
     remote_addr = request.remote_addr
-    # 모든 연결은 세이브더칠드런 본부 혹은 로컬에서만 접속 가능해야 한다.
-    # TODO : 옥산빌딩
+
     remote_first_addr = remote_addr[:remote_addr.rfind(".") + 1]
 
     # 접속 허용이 가능한 IP입니까?
