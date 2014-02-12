@@ -22,7 +22,6 @@ $ source venv/bin/activate
 
 윈도우 환경에서 구축시에는 psycopg2 모듈이 별도로 설치되어야 가능합니다.
 
-
 3. 데이터베이스 구성
 
 지원 데이터베이스 : PostgreSQL 9.1
@@ -35,14 +34,11 @@ $ source venv/bin/activate
   
   - 비밀번호 : 1234
 
-
-
-
-3. 프로그램 실행
+4. 프로그램 실행
 
 $ python serv_start.py
 
-4. 접속
+5. 접속
 
 http://localhost/pc
 
