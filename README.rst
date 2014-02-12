@@ -31,6 +31,7 @@ $ source venv/bin/activate
   
   - 비밀번호 : 1234
 
+
 3. 프로그램 실행
 
 $ python serv_start.py
