@@ -4,48 +4,63 @@ Proper: Small CMS for BIZ
 simple service
 -------- 
 
-ÇÏµå¿ş¾î ÀÚ»ê°ü¸® ÇÁ·Î±×·¥ÀÔ´Ï´Ù.
+í•˜ë“œì›¨ì–´ ìì‚°ê´€ë¦¬ í”„ë¡œê·¸ë¨ì…ë‹ˆë‹¤.
 
-¼³Ä¡¹æ¹ı
+ì„¤ì¹˜ë°©ë²•
 ========
 
-1. VirtualEnv È¯°æ±¸¼º
+1. VirtualEnv í™˜ê²½êµ¬ì„±
 
-::
+```bash
+$ easy_install virtualenv
+$ virtualenv venv
+```
 
-    $ easy_install virtualenv
-    $ virtualenv venv
+2. ë¼ì´ë¸ŒëŸ¬ë¦¬ ì„¤ì¹˜
 
-2. ¶óÀÌºê·¯¸® ¼³Ä¡
+    virtualenv
+        $ source venv/bin/activate
+        (venv)$ easy_install flask==0.10.1 jinja2==2.7.1 markupsafe==0.18 sqlalchemy==0.9.1 webhelpers==1.3 tornado==3.2 flask-sqlalchemy==1.0 python-dateutil psycopg2
 
-::
+    ìœˆë„ìš° í™˜ê²½ì—ì„œ êµ¬ì¶•ì‹œì—ëŠ” psycopg2 ëª¨ë“ˆì´ ë³„ë„ë¡œ ì„¤ì¹˜ë˜ì–´ì•¼ ê°€ëŠ¥í•©ë‹ˆë‹¤.
 
-    $ source venv/bin/activate
-    (venv)$ easy_install flask==0.10.1 jinja2==2.7.1 markupsafe==0.18 sqlalchemy==0.9.1 webhelpers==1.3 tornado==3.2 flask-sqlalchemy==1.0 python-dateutil psycopg2
 
-À©µµ¿ì È¯°æ¿¡¼­ ±¸Ãà½Ã¿¡´Â psycopg2 ¸ğµâÀÌ º°µµ·Î ¼³Ä¡µÇ¾î¾ß °¡´ÉÇÕ´Ï´Ù.
+* ubuntu + pip + virtualenvwrapper ì´ìš©ì‹œ.
+    ''$ sudo pip install virtualenvwrapper''
+    ''$ vi ~{user}/.bashrc ìˆ˜ì •
+        export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/pythonexport
+        VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenvsource
+        /usr/local/bin/virtualenvwrapper.sh
+    ''$ source ~{user}/.bashrc''
+    ''$ mkvirtualenv --distribute --no-site-packages [virtualenv name] --python=[python path]''
+    ''$ sudo apt-get install libpq-dev python-dev : psycopg2 ë¥¼ pip ì„¤ì¹˜ì‹œ ë¯¸ë¦¬ ìˆì–´ì•¼ í•˜ëŠ” íŒ¨í‚¤ì§€.''
+    ''$ (virtualenv name) pip install -r requirement.txt''
 
-3. µ¥ÀÌÅÍº£ÀÌ½º ±¸¼º
 
-Áö¿ø µ¥ÀÌÅÍº£ÀÌ½º : PostgreSQL 9.1
 
-»ı¼º µ¥ÀÌÅÍº£ÀÌ½º ¹× »ç¿ëÀÚ :
+3. ë°ì´í„°ë² ì´ìŠ¤ êµ¬ì„±
 
-  * µ¥ÀÌÅÍº£ÀÌ½º : proper
-  * »ç¿ëÀÚ : proper
-  * ºñ¹Ğ¹øÈ£ : 1234
+ì§€ì› ë°ì´í„°ë² ì´ìŠ¤ : PostgreSQL 9.1
 
-::
+ìƒì„± ë°ì´í„°ë² ì´ìŠ¤ ë° ì‚¬ìš©ì :
 
-    (venv)$ python
-    >>> from proper import db
-    >>> db.create_all()
+  - ë°ì´í„°ë² ì´ìŠ¤ : proper
+  
+  - ì‚¬ìš©ì : proper
+  
+  - ë¹„ë°€ë²ˆí˜¸ : 1234
 
-4. ÇÁ·Î±×·¥ ½ÇÇà
+(venv)$ python
 
-``$ python serv_start.py``
+>>> from proper import db
 
-5. Á¢¼Ó
+>>> db.create_all()
+
+4. í”„ë¡œê·¸ë¨ ì‹¤í–‰
+
+$ python serv_start.py
+
+5. ì ‘ì†
 
 http://localhost/pc
 
