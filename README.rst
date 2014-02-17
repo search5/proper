@@ -43,7 +43,7 @@ simple service
 
 4. 프로그램 실행
 
-"``$ python serv_start.py``"
+``$ python serv_start.py``
 
 5. 접속
 
