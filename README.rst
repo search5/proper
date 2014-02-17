@@ -11,8 +11,10 @@ simple service
 
 1. VirtualEnv 환경구성
 
-    $ easy_install virtualenv
-    $ virtualenv venv
+```bash
+$ easy_install virtualenv
+$ virtualenv venv
+```
 
 2. 라이브러리 설치
 
