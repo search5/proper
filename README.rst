@@ -50,22 +50,28 @@ simple service
 3. 데이터베이스 구성
 
     지원 데이터베이스 : PostgreSQL 9.1
+    
     생성 데이터베이스 및 사용자 :
         - 데이터베이스 : proper
         - 사용자 : proper
         - 비밀번호 : 1234
 
     ``(venv)$ python``
+    
         ``>>> from proper import db``
+        
         ``>>> db.create_all()``
         
 
 4. 프로그램 실행
+    
     ``$ python serv_start.py``
 
 
 5. 접속
+    
     ``http://localhost/pc``
+
 
 
 :Authors: 
@@ -73,4 +79,4 @@ simple service
     Haibane
     This is Test Version
 
-:Version: 1.0 of 2013/12/24 
+:Version: 1.0.1 of 2014/02/17 
