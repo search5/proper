@@ -26,15 +26,15 @@ $ virtualenv venv
 
 
     ubuntu + pip + virtualenvwrapper 이용시.
-    '$ sudo pip install virtualenvwrapper'
-    '$ vi ~{user}/.bashrc 수정
-        export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/pythonexport
-        VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenvsource
-        /usr/local/bin/virtualenvwrapper.sh
-    '$ source ~{user}/.bashrc''
-    '$ mkvirtualenv --distribute --no-site-packages [virtualenv name] --python=[python path]'
-    '$ sudo apt-get install libpq-dev python-dev : psycopg2 를 pip 설치시 미리 있어야 하는 패키지.'
-    '$ (virtualenv name) pip install -r requirement.txt'
+        ``$ sudo pip install virtualenvwrapper``
+        ``$ vi ~{user}/.bashrc 수정``
+        ``export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/pythonexport``
+        ``VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenvsource``
+        ``/usr/local/bin/virtualenvwrapper.sh``
+        ``$ source ~{user}/.bashrc``
+        ``$ mkvirtualenv --distribute --no-site-packages [virtualenv name] --python=[python path]``
+        ``$ sudo apt-get install libpq-dev python-dev : psycopg2 를 pip 설치시 미리 있어야 하는 패키지.``
+        ``$ (virtualenv name) pip install -r requirement.txt``
 
 
 
