@@ -18,6 +18,8 @@ simple service
 
 2. 라이브러리 설치
 
+::
+
     $ source venv/bin/activate
     (venv)$ easy_install flask==0.10.1 jinja2==2.7.1 markupsafe==0.18 sqlalchemy==0.9.1 webhelpers==1.3 tornado==3.2 flask-sqlalchemy==1.0 python-dateutil psycopg2
 
@@ -29,21 +31,19 @@ simple service
 
 생성 데이터베이스 및 사용자 :
 
-  - 데이터베이스 : proper
-  
-  - 사용자 : proper
-  
-  - 비밀번호 : 1234
+  * 데이터베이스 : proper
+  * 사용자 : proper
+  * 비밀번호 : 1234
 
-(venv)$ python
+::
 
->>> from proper import db
-
->>> db.create_all()
+    (venv)$ python
+    >>> from proper import db
+    >>> db.create_all()
 
 4. 프로그램 실행
 
-$ python serv_start.py
+"``$ python serv_start.py``"
 
 5. 접속
 
