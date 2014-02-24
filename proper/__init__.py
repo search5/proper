@@ -422,6 +422,7 @@ def monitor_asset_update(asset_code):
         'manufacture': request.values.get('manufacture', ''),
         'asset_code': request.values.get('asset_code', ''),
         'make_date': request.values.get('make_date', ''),
+        'acquire_money': request.values.get('acquire_money', ''),
         'product_name': request.values.get('product_name', ''),
         'product_serial': request.values.get('product_serial', ''),
         'acquire_date': request.values.get('acquire_date', ''),
@@ -610,3 +611,25 @@ def sr():
     }
 
     return render_template("sr/list.html", **view_data)
+
+########################################## Excel
+@app.route("/pc/excel")
+def pc_excel():
+    pass
+
+@app.route("/monitor/execel")
+def monitor_excel():
+    pass
+
+@app.route("/notebook/excel")
+def notebook_excel():
+    pass
+
+@app.route("/userAsset/excel")
+def user_asset_excel():
+    q = db.session.query(User)
+    q = q.order_by(db.desc(User.seq))
+
+    db.session.commit()
+
+    return render_template("mngt/user.html", **view_data)
