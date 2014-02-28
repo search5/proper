@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/proper.iml" filepath="$PROJECT_DIR$/.idea/proper.iml" />
-      <module fileurl="file://$USER_HOME$/recovist/recovist/.idea/recovist.iml" filepath="$USER_HOME$/recovist/recovist/.idea/recovist.iml" />
     </modules>
   </component>
 </project>
