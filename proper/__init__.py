@@ -30,8 +30,7 @@ def connect_db():
 def before_request():
     g.db = connect_db()
     remote_addr = request.remote_addr
-    # 모든 연결은 세이브더칠드런 본부 혹은 로컬에서만 접속 가능해야 한다.
-    # TODO : 옥산빌딩
+
     remote_first_addr = remote_addr[:remote_addr.rfind(".") + 1]
 
     # 접속 허용이 가능한 IP입니까?
@@ -111,6 +110,19 @@ def pc_asset_create():
 
     return redirect(url_for('pc'))
 
+@app.route("/pc/create/empty", methods=("POST",))
+def pc_asset_create_empty():
+    asset = Asset()
+    asset.asset_type = 'desktop'
+
+    db.session.add(asset)
+    db.session.commit()
+
+    asset.asset_code = util.makeAssetCode(asset.seq)
+    db.session.commit()
+
+    return ""
+
 @app.route("/pc/<asset_code>", endpoint="pc_view")
 def pc_asset_view(asset_code):
 
@@ -122,7 +134,7 @@ def pc_asset_view(asset_code):
     asset_history = db.session.query(AssetHistory).filter(AssetHistory.asset_code == asset_code)
     asset_dict['asset_history'] = asset_history
 
-    print dir(asset)
+    #print dir(asset)
 
     return render_template("asset/pc_view.html", **asset_dict)
 
@@ -181,6 +193,38 @@ def pc_asset_update(asset_code):
     record.user = user
 
     db.session.commit()
+
+    return redirect(url_for("pc_view", asset_code=asset_code))
+
+# 정보 업데이트
+@app.route("/pc/<asset_code>/updateXml", methods=("POST",))
+def pc_asset_update_xml(asset_code):
+    print asset_code
+    if request.files['file_xml']:
+        new_xml_filename = os.path.join(app.config['UPLOAD_DIR'], util.generateTimeBaseFileName(request.files['file_xml'].filename))
+        request.files['file_xml'].save(new_xml_filename)
+
+        # XML 파일을 분석해서 정보 채워넣기
+        pc_info = util.parsePCInfoXML(new_xml_filename)
+
+        asset = db.session.query(Asset).filter(Asset.asset_code == asset_code).first()
+        asset.manufacture = pc_info['manufacture']
+        asset.video_chip = pc_info['video_chip']
+        asset.scan_time = parse(pc_info['scan_time'])
+        asset.service_pack = pc_info['service_pack']
+        asset.processor_version = pc_info['cpu_name']
+        asset.hdd_name = pc_info['hdd_name']
+        asset.memory_size = pc_info['memory_size']
+        asset.hdd_capacity = pc_info['hdd_capacity']
+        asset.hdd_serial = pc_info['hdd_serial']
+        asset.product_serial = pc_info['product_serial']
+        asset.mac_address = pc_info['mac_addr']
+        asset.os = pc_info['os']
+        asset.product_name = pc_info['product_name']
+        asset.usb_support_type = pc_info['usb_support_ver']
+        asset.xml_file_name = request.files['file_xml'].filename
+
+        db.session.commit()
 
     return redirect(url_for("pc_view", asset_code=asset_code))
 
@@ -378,6 +422,7 @@ def monitor_asset_update(asset_code):
         'manufacture': request.values.get('manufacture', ''),
         'asset_code': request.values.get('asset_code', ''),
         'make_date': request.values.get('make_date', ''),
+        'acquire_money': request.values.get('acquire_money', ''),
         'product_name': request.values.get('product_name', ''),
         'product_serial': request.values.get('product_serial', ''),
         'acquire_date': request.values.get('acquire_date', ''),
@@ -448,7 +493,7 @@ def user_view(user_seq):
     assets_history = assets_history.filter(AssetHistory.old_value == user_seq)
 
     assets_history = db.session.query(Asset).filter(Asset.asset_code.in_(assets_history))
-    print assets_history.all()
+    #print assets_history.all()
 
     view_data = q.__dict__
     view_data['assets'] = q.assets
@@ -566,3 +611,25 @@ def sr():
     }
 
     return render_template("sr/list.html", **view_data)
+
+########################################## Excel
+@app.route("/pc/excel")
+def pc_excel():
+    pass
+
+@app.route("/monitor/execel")
+def monitor_excel():
+    pass
+
+@app.route("/notebook/excel")
+def notebook_excel():
+    pass
+
+@app.route("/userAsset/excel")
+def user_asset_excel():
+    q = db.session.query(User)
+    q = q.order_by(db.desc(User.seq))
+
+    db.session.commit()
+
+    return render_template("mngt/user.html", **view_data)

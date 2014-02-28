@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content%}
-<div class="row">
+<div class="row" xmlns="http://www.w3.org/1999/html">
     <div class="row">
         <div class="span10">
             <ul id="listTab" class="nav nav-tabs">
@@ -13,6 +13,7 @@
                 <div class="tab-pane" id="add">
                     <form method="post" action="/pc/create" enctype="multipart/form-data">
                         XML 선택 : <input type="file" name="file_xml" size="40"/> <input class="btn" type="submit" value="정보 등록"/>
+                        <button class="btn" id="emptyRegister">빈 PC 등록</button>
                     </form>
                 </div>
             </div>
@@ -58,6 +59,13 @@
 <script type="text/javascript">
 $(function() {
     $('#listTab a:first').tab('show');
+
+    $("button#emptyRegister").click(function(e) {
+        $.post("/pc/create/empty");
+        document.location.reload();
+
+        e.preventDefault();
+    });
 });
 </script>
 {% endblock %}

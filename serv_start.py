@@ -1,0 +1,9 @@
+execfile('venv\\scripts\\activate_this.py', dict(__file__='venv\\scripts\\activate_this.py'))
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+from proper import app
+
+http_server = HTTPServer(WSGIContainer(app))
+http_server.listen(80)
+IOLoop.instance().start()
