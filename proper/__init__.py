@@ -7,12 +7,16 @@ import os
 import util
 import json
 import re
+from openpyxl import Workbook
 
-from flask import Flask, abort, g, render_template, request, redirect, url_for
+from flask import Flask, abort, g, render_template, request, redirect, url_for, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
 from webhelpers import paginate
 from dateutil.parser import parse
 #from werkzeug.utils import secure_filename
+from cStringIO import StringIO
+import datetime
+
 
 app = Flask(__name__)
 app.config['UPLOAD_DIR'] = os.path.join(os.path.dirname(__file__), "uploads")
@@ -627,9 +631,142 @@ def notebook_excel():
 
 @app.route("/userAsset/excel")
 def user_asset_excel():
-    q = db.session.query(User)
-    q = q.order_by(db.desc(User.seq))
+    q = db.session.query(User).order_by(db.desc(User.seq))
+
+    output = StringIO()
+
+    # 컬럼 : 자산구분/부서/이용자/제품명/제조년월/프로세서(PC)/메모리(PC)/비고/사용년수/제조년도/OS
+    wb = Workbook()
+    ws = wb.get_active_sheet()
+
+    # sheet setting
+    ws.title = "Sheet1"
+
+    # db to excel
+    column_header = [
+        {
+            "title": u"자산구분",
+            "db_column": "asset_type",
+            "index": 0
+        },
+        {
+            "title": u"부서",
+            "db_column": "user",
+            "sub_path": "dept.dept_team_nm",
+            "index": 1
+        },
+        {
+            "title": u"이용자",
+            "db_column": "user",
+            "sub_path": "user_name",
+            "index": 2
+        },
+        {
+            "title": u"제품명",
+            "db_column": "product_name",
+            "index": 3
+        },
+        {
+            "title": u"제조년월",
+            "db_column": "make_date",
+            "index": 4
+        },
+        {
+            "title": u"프로세서(PC)",
+            "db_column": "processor_version",
+            "index": 5
+        },
+        {
+            "title": u"메모리(PC)",
+            "db_column": "memory_size",
+            "index": 6
+        },
+        {
+            "title": u"비고",
+            "db_column": "note",
+            "index": 7
+        },
+        {
+            "title": u"사용년수",
+            "db_column": "make_date",
+            "index": 8
+        },
+        {
+            "title": u"제조년도",
+            "db_column": "make_date",
+            "index": 9
+        },
+        {
+            "title": u"OS",
+            "db_column": "os",
+            "index": 10
+        }
+    ]
+
+    # excel column title setting(
+    for column in column_header:
+        cell = ws.cell(row=0, column=column["index"])
+        cell.value = column["title"]
+
+    def sheet_row_writing(ws, row, row_data):
+        for column in column_header:
+            cell = ws.cell(row=row, column=column["index"])
+
+            db_column = column["db_column"]
+            if db_column:
+                value = getattr(row_data, db_column)
+
+                sub_path = column.get('sub_path', '')
+                if sub_path:
+                    # sub_path가 2단계인가?
+                    if "." in sub_path:
+                        parent_value = getattr(value, sub_path.split(".")[0])
+                        value = getattr(parent_value, sub_path.split(".")[1])
+                        #value = sub_path.split(".")[1]
+                    else:
+                        value = getattr(value, sub_path)
+
+                asset_type = {
+                    'desktop': '데스크탑',
+                    'notebook': '노트북',
+                    'monitor': '모니터'
+                }
+
+
+                if db_column == "asset_type":
+                    value = asset_type[value]
+                elif db_column == "make_date":
+                    if value:
+                        tmp_date = value.split(".")
+                        value = datetime.date(int(tmp_date[0]), int(tmp_date[1]), 1)
+
+                if column["title"] == u"제조년월":
+                    if type(value) == datetime.date:
+                        value = value.month
+                elif column["title"] == u"제조년도":
+                    if type(value) == datetime.date:
+                        value = value.year
+                elif column["title"] == u"사용년수":
+                    #if value and "." in value:
+                    #    value = value.split(".")[0]
+                    today = datetime.datetime.today().date()
+                    today_delta = today - value
+                    value = today_delta.days / (365.25)
+
+                cell.value = value or ''
+
+    row = 1
+    for user_entry in q:
+        user_asset = user_entry.assets
+        for user_asset_entry in user_asset:
+            sheet_row_writing(ws, row, user_asset_entry)
+            row += 1
+
+    wb.save(output)
+    output.seek(0)
 
     db.session.commit()
 
-    return render_template("mngt/user.html", **view_data)
+    #return render_template("mngt/user.html", **view_data)
+    return send_file(output, mimetype="application/zip", as_attachment=True,
+                     attachment_filename="AssetList.xlsx")
