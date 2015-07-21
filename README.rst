@@ -33,9 +33,11 @@ $ sudo pip install virtualenvwrapper
 $ vi ~/.bashrc
 
 ``
+
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/pythonexport        
 VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenvsource        
 /usr/local/bin/virtualenvwrapper.sh
+
 ``
 
 ::
