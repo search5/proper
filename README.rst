@@ -20,21 +20,10 @@ $ virtualenv venv
 
 2. 라이브러리 설치
 
-virtualenv::
+파이썬 가상 환경 및 필수 패키지 설치::
 
 $ source venv/bin/activate
-
-::
-
-(venv)$ pip install flask==0.10.1
-(venv)$ pip install jinja2==2.7.1
-(venv)$ pip install markupsafe==0.18
-(venv)$ pip install sqlalchemy==0.9.1
-(venv)$ pip install webhelpers==1.3
-(venv)$ pip install tornado==3.2
-(venv)$ pip install flask-sqlalchemy==1.0
-(venv)$ pip install python-dateutil
-(venv)$ pip install psycopg2
+$ pip install -r requirement.txt
         
 윈도우 환경에서 구축시에는 psycopg2 모듈이 별도로 설치되어야 가능합니다.
 
@@ -43,11 +32,11 @@ ubuntu + pip + virtualenvwrapper 이용시::
 $ sudo pip install virtualenvwrapper
 $ vi ~/.bashrc
 
-``
+```
 export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/pythonexport        
 VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenvsource        
 /usr/local/bin/virtualenvwrapper.sh
-``
+```
 
 ::
 
