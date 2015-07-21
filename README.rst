@@ -13,10 +13,12 @@ simple service
 
 1. VirtualEnv 환경구성
 
-```
+<pre>
+<code>
     $ easy_install virtualenv
     $ virtualenv venv
-```
+</code>
+</pre>
 
 2. 라이브러리 설치
 
