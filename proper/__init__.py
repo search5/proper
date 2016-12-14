@@ -34,7 +34,7 @@ def proper_login():
 
 @app.route("/pc")
 def proper_pc():
-    return render_template("resource/pc.html")
+    return render_template("resource/resource_base.html")
 
 """
 app.config['UPLOAD_DIR'] = os.path.join(os.path.dirname(__file__), "uploads")
