@@ -1,0 +1,10 @@
+{
+    "files": [
+        "proper/static/ts/proper.ts"
+    ],
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "es3",
+        "outDir": "proper/static/js"
+    }
+}
