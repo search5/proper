@@ -7,6 +7,7 @@ import os
 import util
 import json
 import re
+import math
 from openpyxl import Workbook
 
 from flask import Flask, abort, g, render_template, request, redirect, url_for, send_file
@@ -16,23 +17,45 @@ from dateutil.parser import parse
 #from werkzeug.utils import secure_filename
 from cStringIO import StringIO
 import datetime
+from dateutil.relativedelta import relativedelta
 
 
 app = Flask(__name__)
+
+@app.route("/")
+def proper_main():
+    return render_template("proper_main.html")
+
+
+@app.route("/", methods=["POST"])
+def proper_login():
+    return redirect("/pc")
+
+
+@app.route("/pc")
+def proper_pc():
+    return render_template("resource/resource_base.html")
+
+"""
 app.config['UPLOAD_DIR'] = os.path.join(os.path.dirname(__file__), "uploads")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proper:1234@localhost/proper'
 db = SQLAlchemy(app)
 
 from proper.models import User, Dept, ServiceRequest, Asset, AssetHistory
 
-def connect_db():
-    pass
-#    return MySQLdb.connect(host="localhost", user="sc_it", passwd="1234", db="sc_it", use_unicode=True, charset="utf8")
+def oldYears(dob):
+    today = datetime.date.today()
+
+    if today.month < dob.month or \
+      (today.month == dob.month and today.day < dob.day):
+        return today.year - dob.year - 1
+    else:
+        return today.year - dob.year
+
 
 
 @app.before_request
 def before_request():
-    g.db = connect_db()
     remote_addr = request.remote_addr
 
     remote_first_addr = remote_addr[:remote_addr.rfind(".") + 1]
@@ -182,7 +205,7 @@ def pc_asset_update(asset_code):
     changed_data = record - user_input_dict
 
     # 변경내역이 None이 아니고 하나 이상일 경우 수행하게 한다.
-    if (changed_data != None) and (len(changed_data) > 0):
+    if changed_data != None:
         for item in changed_data:
             # 히스토리 레코드 생성
             asset_history = AssetHistory(asset_code, **item)
@@ -341,7 +364,7 @@ def notebook_asset_update(asset_code):
     changed_data = record - user_input_dict
 
     # 변경내역이 None이 아니고 하나 이상일 경우 수행하게 한다.
-    if (changed_data != None) and (len(changed_data) > 0):
+    if changed_data != None:
         for item in changed_data:
             # 히스토리 레코드 생성
             asset_history = AssetHistory(asset_code, **item)
@@ -444,7 +467,7 @@ def monitor_asset_update(asset_code):
     changed_data = record - user_input_dict
 
     # 변경내역이 None이 아니고 하나 이상일 경우 수행하게 한다.
-    if (changed_data != None) and (len(changed_data) > 0):
+    if changed_data != None:
         for item in changed_data:
             # 히스토리 레코드 생성
             asset_history = AssetHistory(asset_code, **item)
@@ -737,7 +760,10 @@ def user_asset_excel():
                     value = asset_type[value]
                 elif db_column == "make_date":
                     if value:
-                        tmp_date = value.split(".")
+                        tmp_date = re.split("[\.\-]", value)
+                        # tmp_date의 월이 12이상인 경우 12로 강제 조정한다.
+                        if tmp_date[1] > 12:
+                            tmp_date[1] = 12
                         value = datetime.date(int(tmp_date[0]), int(tmp_date[1]), 1)
 
                 if column["title"] == u"제조년월":
@@ -750,8 +776,11 @@ def user_asset_excel():
                     #if value and "." in value:
                     #    value = value.split(".")[0]
                     today = datetime.datetime.today().date()
-                    today_delta = today - value
-                    value = today_delta.days / (365.25)
+                    if value:
+                        #today_delta = today - value
+                        value = oldYears(value) + 1
+                    else:
+                        value = 0
 
                 cell.value = value or ''
 
@@ -770,3 +799,4 @@ def user_asset_excel():
     #return render_template("mngt/user.html", **view_data)
     return send_file(output, mimetype="application/zip", as_attachment=True,
                      attachment_filename="AssetList.xlsx")
+"""

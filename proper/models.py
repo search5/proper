@@ -62,7 +62,11 @@ class Asset(db.Model):
             # 레코드값이 날짜형인 경우 user_input_value도 날짜형으로 다뤄져야 한다.
             # 이렇게 안하면 날짜형은 계속해서 히스토리 데이터가 쌓이게 된다.
             if type(record_value) == datetime.date:
-                user_input_value = parse(user_input_value).date()
+                if user_input_value:
+                    # 사용자가 입력한 값이 존재할 때만 수행하게 한다.
+                    user_input_value = parse(user_input_value).date()
+                else:
+                    user_input_value = None
 
             # 레코드값이 숫자형인 경우 user_input_value도 숫자형으로 다뤄져야 한다.
             if type(record_value) == int:
