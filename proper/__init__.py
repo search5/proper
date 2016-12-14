@@ -21,6 +21,22 @@ from dateutil.relativedelta import relativedelta
 
 
 app = Flask(__name__)
+
+@app.route("/")
+def proper_main():
+    return render_template("proper_main.html")
+
+
+@app.route("/", methods=["POST"])
+def proper_login():
+    return redirect("/pc")
+
+
+@app.route("/pc")
+def proper_pc():
+    return render_template("resource/pc.html")
+
+"""
 app.config['UPLOAD_DIR'] = os.path.join(os.path.dirname(__file__), "uploads")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proper:1234@localhost/proper'
 db = SQLAlchemy(app)
@@ -783,3 +799,4 @@ def user_asset_excel():
     #return render_template("mngt/user.html", **view_data)
     return send_file(output, mimetype="application/zip", as_attachment=True,
                      attachment_filename="AssetList.xlsx")
+"""
