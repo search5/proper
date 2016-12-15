@@ -10,17 +10,71 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-theme.min.css">
 
+    <link rel="stylesheet" href="/static/css/simple-sidebar.css">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+    <!-- Menu Toggle Script -->
+    <script type="text/javascript">
+    $(function() {
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+    });
+    </script>
 
     {% block css %}
     {% endblock %}
     <title>전산자원관리시스템</title>
 </head>
 <body>
-    {% block main %}
-    {% endblock %}
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">전사자원관리시스템</a>
+                </li>
+                <li>
+                    <a href="#">PC</a>
+                </li>
+                <li>
+                    <a href="#">NOTEBOOK</a>
+                </li>
+                <li>
+                    <a href="#">MONITOR</a>
+                </li>
+                <li>
+                    <a href="#">PRINTER</a>
+                </li>
+                <li>
+                    <a href="#">EQUIPMENT</a>
+                </li>
+                <li>
+                    <a href="#">Support</a>
+                </li>
+                <li>
+                    <a href="#">Users &lt;Jiho&gt;</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                {% block main %}
+                {% endblock %}
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
 </body>
 </html>

@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-#import os.path
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
-import util
+from proper import util
 import json
 import re
 import math
@@ -14,8 +11,7 @@ from flask import Flask, abort, g, render_template, request, redirect, url_for, 
 from flask.ext.sqlalchemy import SQLAlchemy
 from webhelpers import paginate
 from dateutil.parser import parse
-#from werkzeug.utils import secure_filename
-from cStringIO import StringIO
+from StringIO import StringIO
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -34,7 +30,7 @@ def proper_login():
 
 @app.route("/pc")
 def proper_pc():
-    return render_template("resource/resource_base.html")
+    return render_template("resource/pc.html")
 
 """
 app.config['UPLOAD_DIR'] = os.path.join(os.path.dirname(__file__), "uploads")
