@@ -1,17 +1,42 @@
-{% extends "resource/base.html" %}
+{% extends "sub_base.html" %}
+
+{% block css %}
+    <style type="text/css">
+    table.datatable {
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+    </style>
+{% endblock %}
 
 {% block container %}
-    <div class="container">
-
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <h1>Navbar example</h1>
-        <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-        <p>To see the difference between static and fixed top navbars, just scroll.</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
-        </p>
-      </div>
-
-    </div> <!-- /container -->
+    <table class="table table-bordered datatable">
+    <thead>
+    <tr class="info">
+        <th style="width: 8%;">번호</th>
+        <th style="width: 12%;">자산코드</th>
+        <th style="width: 36%;">제품명</th>
+        <th style="width: 8%;">제조년월</th>
+        <th style="width: 8%;">취득년월</th>
+        <th style="width: 14%;">사용자</th>
+        <th style="width: 14%;">비고</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <td colspan="7" style="text-align: center;">paging...</td>
+    </tr>
+    </tfoot>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td>abc-1</td>
+        <td>한국컴퓨터</td>
+        <td>2015.04</td>
+        <td>2015.05</td>
+        <td>이지호</td>
+        <td>test</td>
+    </tr>
+    </tbody>
+    </table>
 {% endblock %}

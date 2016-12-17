@@ -15,20 +15,20 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="#">HOME</a></li>
-            <li class="active"><a href="/pc">PC/Notebook</a></li>
-            <li><a href="/monitor">Monitor</a></li>
-            <li><a href="/printer">Printer</a></li>
-            <li><a href="/equipment">EQUIPMENT</a></li>
-            <li><a href="/sr">Service Request</a></li>
+            <li><a href="/home">HOME</a></li>
+            <li class="{% if request.path == "/pc" %}active{% endif %}"><a href="/pc">PC/Notebook</a></li>
+            <li class="{% if request.path == "/monitor" %}active{% endif %}"><a href="/monitor">Monitor</a></li>
+            <li class="{% if request.path == "/printer" %}active{% endif %}"><a href="/printer">Printer</a></li>
+            <li class="{% if request.path == "/equipment" %}active{% endif %}"><a href="/equipment">EQUIPMENT</a></li>
+            <li class="{% if request.path == "/sr" %}active{% endif %}"><a href="/sr">Service Request</a></li>
 
-            <li class="dropdown">
+            <li class="dropdown {% if request.path in ['/user/use', '/user/modify'] %}active{% endif %}">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">사용자 <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="/user/use">사용조회</a></li>
+                <li class="{% if request.path == "/user/use" %}active{% endif %}"><a href="/user/use">사용조회</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">정보조회</li>
-                <li><a href="/user/modify">정보수정</a></li>
+                <li class="{% if request.path == "/user/modify" %}active{% endif %}"><a href="/user/modify">정보수정</a></li>
                 <li><a href="/logout">로그아웃</a></li>
               </ul>
             </li>
@@ -41,6 +41,8 @@
       </div>
     </nav>
 
-    {% block container %}
-    {% endblock %}
+    <div class="container">
+        {% block container %}
+        {% endblock %}
+    </div>
 {% endblock %}

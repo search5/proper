@@ -25,7 +25,12 @@ def proper_main():
 
 @app.route("/", methods=["POST"])
 def proper_login():
-    return redirect("/pc")
+    return redirect("/home")
+
+
+@app.route("/home")
+def proper_home():
+    return render_template("home.html")
 
 
 @app.route("/pc")
