@@ -32,6 +32,41 @@ def proper_login():
 def proper_pc():
     return render_template("resource/pc.html")
 
+
+@app.route("/monitor")
+def proper_monitor():
+    return render_template("resource/monitor.html")
+
+
+@app.route("/printer")
+def proper_printer():
+    return render_template("resource/printer.html")
+
+
+@app.route("/equipment")
+def proper_equipment():
+    return render_template("resource/equipment.html")
+
+
+@app.route("/sr")
+def proper_sr():
+    return render_template("service/sr.html")
+
+
+@app.route("/<user>/use")
+def user_use(user):
+    return render_template("user/use.html")
+
+
+@app.route("/<user>/modify")
+def user_modify(user):
+    return render_template("user/modify.html")
+
+
+@app.route("/logout")
+def user_logout():
+    return ""
+
 """
 app.config['UPLOAD_DIR'] = os.path.join(os.path.dirname(__file__), "uploads")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://proper:1234@localhost/proper'
