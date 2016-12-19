@@ -58,14 +58,29 @@ def proper_printer():
     return render_template("resource/printer.html")
 
 
+@app.route("/printer/<asset_number>")
+def proper_printer_view(asset_number):
+    return render_template("resource/printer_view.html")
+
+
 @app.route("/equipment")
 def proper_equipment():
     return render_template("resource/equipment.html")
 
 
+@app.route("/equipment/<asset_number>")
+def proper_equipment_view(asset_number):
+    return render_template("resource/equipment_view.html")
+
+
 @app.route("/sr")
 def proper_sr():
     return render_template("service/sr.html")
+
+
+@app.route("/sr/<service_number>")
+def proper_sr_view(service_number):
+    return render_template("service/sr_view.html")
 
 
 @app.route("/<user>/use")

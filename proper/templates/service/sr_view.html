@@ -1,0 +1,85 @@
+{% extends "sub_base.html" %}
+
+{% block container %}
+    <form>
+        <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">서비스 기본 정보</h3>
+        <div class="row">
+            <div class="form-group col-sm-2 form-group-sm">
+                <label>자산코드</label>
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control input-sm" placeholder="자산코드">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                    </span>
+                </div> <!-- /input-group -->
+            </div>
+            <div class="form-group col-sm-2 form-group-sm">
+                <label>접수요청 부서</label>
+                <input type="text" class="form-control input-sm" placeholder="접수요청 부서">
+            </div>
+            <div class="form-group col-sm-2 form-group-sm">
+                <label>접수요청자</label>
+                <input type="text" class="form-control input-sm" placeholder="접수요청자">
+            </div>
+            <div class="form-group col-sm-2 form-group-sm">
+                <label>접수요청일</label>
+                <input type="text" class="form-control input-sm" placeholder="접수요청일">
+            </div>
+            <div class="form-group col-sm-2 form-group-sm">
+                <label>처리시작 시간</label>
+                <input type="text" class="form-control input-sm" placeholder="처리시작시간">
+            </div>
+            <div class="form-group col-sm-2 form-group-sm">
+                <label>처리종료 시간</label>
+                <input type="text" class="form-control input-sm" placeholder="처리종료시간">
+            </div>
+        </div>
+        <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">서비스 상세 정보</h3>
+        <div class="row">
+            <div class="form-group col-sm-2">
+                <label>증상분류</label>
+                <select class="form-control input-sm">
+                    <option>소프트웨어</option>
+                    <option>하드웨어</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-2">
+                <label>처리상태</label>
+                <select class="form-control input-sm">
+                    <option>처리전</option>
+                    <option>처리중</option>
+                    <option>처리완료</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-2">
+                <label>외부 처리 회사</label>
+                <input type="text" class="form-control input-sm" placeholder="외부 처리 회사">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>외부 처리 담당자</label>
+                <input type="text" class="form-control input-sm" placeholder="외부 처리 담당자">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>외부 처리 연락처</label>
+                <input type="text" class="form-control input-sm" placeholder="외부 처리 연락처">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-6 form-group-sm">
+                <label>증상</label>
+                <textarea class="form-control input-sm" placeholder="증상" rows="8"></textarea>
+            </div>
+            <div class="form-group col-sm-6 form-group-sm">
+                <label>처리내역</label>
+                <textarea class="form-control ᅟinput-sm" placeholder="처리내역" rows="8"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-offset-5 col-sm-12 text-align">
+                <button class="btn btn-success btn-sm">수정</button>
+                <button class="btn btn-danger btn-sm">삭제</button>
+                <button class="btn btn-info btn-sm">목록</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

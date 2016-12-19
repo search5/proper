@@ -1,0 +1,90 @@
+{% extends "sub_base.html" %}
+
+{% block css %}
+    <style type="text/css">
+    table.datatable {
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <form>
+        <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">자산기본정보</h3>
+        <div class="row">
+            <div class="form-group col-sm-2">
+                <label>자산코드</label>
+                <input type="text" class="form-control input-sm" placeholder="자산코드">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>취득년월일</label>
+                <input type="text" class="form-control input-sm" placeholder="취득년월일">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>취득가</label>
+                <input type="text" class="form-control input-sm" placeholder="취득가">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>사용자</label>
+                <input type="text" class="form-control input-sm" placeholder="사용자">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>지급일</label>
+                <input type="text" class="form-control input-sm" placeholder="지급일">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>회수일</label>
+                <input type="text" class="form-control input-sm" placeholder="회수일">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-2">
+                <label>폐기일</label>
+                <input type="text" class="form-control input-sm" placeholder="폐기일">
+            </div>
+            <div class="form-group col-sm-6">
+                <label>폐기사유</label>
+                <input type="text" class="form-control input-sm" placeholder="폐기사유">
+            </div>
+        </div>
+        <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">자산상세정보</h3>
+        <div class="row">
+            <div class="form-group col-sm-4">
+                <label>모니터 제품명</label>
+                <input type="text" class="form-control input-sm" placeholder="PC 제품명">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>모니터 제품번호</label>
+                <input type="text" class="form-control input-sm" placeholder="PC 제품번호">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>제조사</label>
+                <input type="text" class="form-control input-sm" placeholder="제조사">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>제조년월</label>
+                <input type="text" class="form-control input-sm" placeholder="제조년월">
+            </div>
+            <div class="form-group col-sm-2">
+                <label>위치</label>
+                <input type="text" class="form-control input-sm" placeholder="위치">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-10">
+                <label>비고</label>
+                <textarea type="text" class="form-control input-sm" placeholder="비고" rows="4"></textarea>
+            </div>
+        </div>
+
+    </form>
+    <hr>
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-12 text-align">
+            <button class="btn btn-success">수정</button>
+            <button class="btn btn-danger">삭제</button>
+            <button class="btn btn-info">목록</button>
+        </div>
+    </div>
+{% endblock %}
