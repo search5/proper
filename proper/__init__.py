@@ -38,6 +38,11 @@ def proper_pc():
     return render_template("resource/pc.html")
 
 
+@app.route("/pc/<asset_number>")
+def proper_pc_view(asset_number):
+    return render_template("resource/pc_view.html")
+
+
 @app.route("/monitor")
 def proper_monitor():
     return render_template("resource/monitor.html")
