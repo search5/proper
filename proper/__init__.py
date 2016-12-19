@@ -48,6 +48,11 @@ def proper_monitor():
     return render_template("resource/monitor.html")
 
 
+@app.route("/monitor/<asset_number>")
+def proper_monitor_view(asset_number):
+    return render_template("resource/monitor_view.html")
+
+
 @app.route("/printer")
 def proper_printer():
     return render_template("resource/printer.html")
