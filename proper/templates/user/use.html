@@ -1,13 +1,93 @@
 {% extends "sub_base.html" %}
 
 {% block container %}
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <h1>Navbar example</h1>
-        <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-        <p>To see the difference between static and fixed top navbars, just scroll.</p>
-        <p>
-          <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
-        </p>
-      </div>
+    <form>
+        <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">자산 이용 정보</h3>
+        <div class="row">
+            <div class="form-group col-sm-3 form-group-sm">
+                <label>부서</label>
+                <input type="text" class="form-control input-sm" placeholder="부서">
+            </div>
+            <div class="form-group col-sm-3 form-group-sm">
+                <label>이름</label>
+                <input type="text" class="form-control input-sm" placeholder="이름">
+            </div>
+            <div class="form-group col-sm-3 form-group-sm">
+                <label>직급</label>
+                <input type="text" class="form-control input-sm" placeholder="직급">
+            </div>
+            <div class="form-group col-sm-3 form-group-sm">
+                <label>ᅟIP</label>
+                <input type="text" class="form-control input-sm" placeholder="IP">
+            </div>
+        </div>
+        <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">사용중인 자산 목록</h3>
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-hover datatable">
+                    <thead>
+                    <tr>
+                        <th style="width: 20%">자산코드</th>
+                        <th style="width: 40%">자산명</th>
+                        <th style="width: 20%">취득년월</th>
+                        <th style="width: 20%">사용년월</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control input-sm" placeholder="자산코드" readonly="readonly">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                </span>
+                            </div>
+                        </td>
+                        <td>한국컴퓨터</td>
+                        <td>2015.02</td>
+                        <td>0216.03</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">사용했던 자산 목록</h3>
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-hover datatable">
+                    <thead>
+                    <tr>
+                        <th style="width: 20%">자산코드</th>
+                        <th style="width: 40%">자산명</th>
+                        <th style="width: 20%">취득년월</th>
+                        <th style="width: 20%">사용년월</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control input-sm" placeholder="자산코드" readonly="readonly">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                </span>
+                            </div>
+                        </td>
+                        <td>한국컴퓨터</td>
+                        <td>2015.02</td>
+                        <td>0216.03</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-12 text-align">
+            <button class="btn btn-success btn-sm">수정</button>
+            <button class="btn btn-danger btn-sm">삭제</button>
+            <button class="btn btn-info btn-sm">목록</button>
+        </div>
+    </div>
 {% endblock %}
