@@ -1,5 +1,23 @@
 {% extends "sub_base.html" %}
 
+{% block css %}
+<!-- include summernote css/js-->
+    <link href="/static/summernote/summernote.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="/static/summernote/summernote.js"></script>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+    $(function() {
+        $('.summernote').summernote({
+            tabsize: 2,
+            height: 150
+        });
+    });
+    </script>
+{% endblock %}
+
 {% block container %}
     <form>
         <h3 style="padding-bottom: 6px; border-bottom: solid 1px #eee;">서비스 기본 정보</h3>
@@ -67,11 +85,11 @@
         <div class="row">
             <div class="form-group col-sm-6 form-group-sm">
                 <label>증상</label>
-                <textarea class="form-control input-sm" placeholder="증상" rows="8"></textarea>
+                <div class="summernote">summernote 1</div>
             </div>
             <div class="form-group col-sm-6 form-group-sm">
                 <label>처리내역</label>
-                <textarea class="form-control ᅟinput-sm" placeholder="처리내역" rows="8"></textarea>
+                <div class="summernote">summernote 2</div>
             </div>
         </div>
     </form>
