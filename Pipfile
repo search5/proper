@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 flask = "*"
 gunicorn = "*"
+python-dateutil = "*"
+"webhelpers2" = "*"
+paginate = "*"
+paginate-sqlalchemy = "*"
 
 [dev-packages]
 
