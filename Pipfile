@@ -12,6 +12,7 @@ paginate = "*"
 paginate-sqlalchemy = "*"
 sqlalchemy = "*"
 openpyxl = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 
