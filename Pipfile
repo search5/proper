@@ -11,6 +11,7 @@ python-dateutil = "*"
 paginate = "*"
 paginate-sqlalchemy = "*"
 sqlalchemy = "*"
+openpyxl = "*"
 
 [dev-packages]
 
