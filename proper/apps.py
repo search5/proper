@@ -8,7 +8,7 @@ import math
 from openpyxl import Workbook
 
 from flask import Flask, abort, g, render_template, request, redirect, url_for, send_file
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from webhelpers import paginate
 from dateutil.parser import parse
 from StringIO import StringIO
