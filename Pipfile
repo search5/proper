@@ -13,6 +13,7 @@ paginate-sqlalchemy = "*"
 sqlalchemy = "*"
 openpyxl = "*"
 flask-sqlalchemy = "*"
+webhelpers = "*"
 
 [dev-packages]
 
