@@ -9,7 +9,7 @@ from openpyxl import Workbook
 
 from flask import Flask, abort, g, render_template, request, redirect, url_for, send_file
 from flask_sqlalchemy import SQLAlchemy
-from webhelpers import paginate
+import paginate
 from dateutil.parser import parse
 from StringIO import StringIO
 import datetime
