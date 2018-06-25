@@ -10,6 +10,7 @@ python-dateutil = "*"
 "webhelpers2" = "*"
 paginate = "*"
 paginate-sqlalchemy = "*"
+sqlalchemy = "*"
 
 [dev-packages]
 
