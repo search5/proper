@@ -11,7 +11,7 @@ from flask import Flask, abort, g, render_template, request, redirect, url_for, 
 from flask_sqlalchemy import SQLAlchemy
 import paginate
 from dateutil.parser import parse
-from StringIO import StringIO
+from io import StringIO
 import datetime
 from dateutil.relativedelta import relativedelta
 
