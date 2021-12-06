@@ -20,3 +20,8 @@ Data*.fs*
 coverage
 test
 *.sqlite
+proper/static/js
+proper/static/css
+proper/static/index.html
+proper/static/favicon.ico
+node_modules
